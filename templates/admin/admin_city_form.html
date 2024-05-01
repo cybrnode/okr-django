@@ -1,0 +1,26 @@
+<!-- admin_city_form.html -->
+{% extends "admin:admin/index.html" %}
+{% block extrahead %}
+{{ block.super }}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#id_state').change(function() {
+            var state_id = $(this).val();
+            $.ajax({
+                url: '/admin/get_cities/',  // URL to fetch cities based on state
+                type: 'GET',
+                data: {
+                    'state_id': state_id
+                },
+                success: function(data) {
+                    $('#id_city').html(data);  // Populate city dropdown
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}
