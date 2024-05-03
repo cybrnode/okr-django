@@ -1,7 +1,13 @@
+import logging
+import sys
 from django.db import models
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import ForeignKey
+
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+
 
 class KJBCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -38,6 +44,7 @@ class Checklist(models.Model):
     def __str__(self) -> str:
         return str(self.plan_id.goal_type)
 
+
 class Reflection(models.Model):
     plan_id = models.ForeignKey(Checklist, on_delete=models.CASCADE)
     date = models.DateField()
@@ -49,6 +56,7 @@ class Reflection(models.Model):
     conclusion = models.TextField()
     plan = models.TextField()
 
+
 class CategoryPoints(models.Model):
     category = models.ForeignKey(KJBCategory, on_delete=models.CASCADE)
     name = models.TextField()
@@ -56,27 +64,59 @@ class CategoryPoints(models.Model):
     def __str__(self):
         return self.name
 
+
 class ChecklistStatus(models.Model):
     checklist = models.ForeignKey(Checklist, on_delete=models.CASCADE)
-    category_points = models.ForeignKey(CategoryPoints, on_delete=models.CASCADE)
+    category_points = models.ForeignKey(
+        CategoryPoints, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
     status = models.BooleanField(default=False)
     comment = models.TextField(blank=True, null=True)  # Add the comment field
 
     def __str__(self):
         return self.comment
-    
+
+
 class Demo(models.Model):
     name = models.TextField()
 
     def __str__(self):
         return str(self.id)
-    
+
+
 class ChecklistTable(models.Model):
     date = models.DateField(auto_now_add=True)
     checklist = models.ForeignKey(Checklist, on_delete=models.CASCADE)
-    category_points_id = models.ForeignKey(CategoryPoints, on_delete=models.CASCADE)
+    category_points_id = models.ForeignKey(
+        CategoryPoints,
+        on_delete=models.CASCADE,
+    )
     category = models.ForeignKey(KJBCategory, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.id)
+
+
+logger = logging.getLogger(__name__)
+
+
+@receiver(post_save, sender=Checklist)
+def create_b_for_a(sender, instance: Checklist, created, **kwargs):
+    print("Hello")
+
+    if created == True:  # Check if A was created (not updated)
+
+        try:
+            
+            print(instance)
+
+            checklist_table =ChecklistTable.objects.create(
+                checklist=instance,
+                category=KJBCategory.objects.first(),
+                category_points_id=CategoryPoints.objects.first()
+            )
+
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print(f"An exception of type {exc_type.__name__} occurred: {exc_value}")
+
