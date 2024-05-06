@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import KJBCategory, KJBGoalType, KJBGoal, Checklist, Reflection, CategoryPoints, ChecklistStatus, ChecklistTable
+from .models import KJBCategory, KJBGoalType, KJBGoal, Checklist, Reflection, CategoryPoints, ChecklistStatus, ChecklistTable, SubCategory
 
 
 class KJBGoalAdmin(admin.ModelAdmin):
@@ -121,7 +121,17 @@ class ReflectionAdmin(admin.ModelAdmin):
 
 
 class ChecklistTableAdmin(admin.ModelAdmin):
-    list_display = ('checklist', 'date', 'category', 'category_points_id',)
+    list_display = (
+        'checklist',
+        'date',
+        'category',
+        'sub_cat',
+        'status',
+    )
+
+    def status(self, obj: ChecklistTable):
+        return obj.checklist.status
+
     # list_filter = ('plan_id', 'date', 'conclusion', 'plan')
     # search_fields = ['plan_id']
     # date_hierarchy = 'date'
@@ -139,3 +149,4 @@ admin.site.register(KJBGoal, KJBGoalAdmin)
 admin.site.register(Checklist, ChecklistAdmin)
 admin.site.register(Reflection, ReflectionAdmin)
 admin.site.register(ChecklistTable, ChecklistTableAdmin)
+admin.site.register(SubCategory)

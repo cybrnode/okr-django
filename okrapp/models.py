@@ -84,10 +84,18 @@ class Demo(models.Model):
         return str(self.id)
 
 
+class SubCategory(models.Model):
+    name = models.TextField()
+    description = models.TextField()
+
+    def __str__(self) -> str:
+        return self.name
+
 class ChecklistTable(models.Model):
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField()
     checklist = models.ForeignKey(Checklist, on_delete=models.CASCADE)
-    category_points_id = models.ForeignKey(
+    
+    sub_cat = models.ForeignKey(
         CategoryPoints,
         on_delete=models.CASCADE,
     )
