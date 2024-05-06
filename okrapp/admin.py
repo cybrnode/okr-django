@@ -2,7 +2,6 @@ from django.contrib import admin
 from .models import KJBCategory, KJBGoalType, KJBGoal, Checklist, Reflection, CategoryPoints, ChecklistStatus, ChecklistTable
 
 
-
 class KJBGoalAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = super().get_readonly_fields(request, obj)
@@ -16,7 +15,8 @@ class KJBGoalAdmin(admin.ModelAdmin):
         # Return the value of the plan field from the related Reflection object
         return obj.plan_id.plan
 
-    reflection_conclusion.short_description = 'Conclusion'  # Set custom column name in admin
+    # Set custom column name in admin
+    reflection_conclusion.short_description = 'Conclusion'
     reflection_plan.short_description = 'Plan'  # Set custom column name in admin
 
     # Define the fields that should be editable
@@ -79,8 +79,7 @@ class ChecklistAdmin(admin.ModelAdmin):
         'get_reflection_conclusion',
         'get_reflection_plan'
     )
-    
-    
+
 
 class CategoryPointsAdmin(admin.ModelAdmin):
     list_display = ('id', 'category', 'name')
@@ -98,7 +97,7 @@ class ChecklistStatusAdmin(admin.ModelAdmin):
         'status',
         'comment'
     )  # Include 'comment' in list_display
-    
+
     list_filter = ('date', 'status', 'category_points')
     search_fields = ['checklist__id', 'category_points__id']
     date_hierarchy = 'date'
@@ -107,6 +106,7 @@ class ChecklistStatusAdmin(admin.ModelAdmin):
         return f"{obj.category_points.category.name} - {obj.category_points.name}"
 
     category_points_with_category.short_description = 'Category Points'
+
     class Media:
         js = (
             'js/admin.js',   # inside app static folder
@@ -119,16 +119,16 @@ class ReflectionAdmin(admin.ModelAdmin):
     search_fields = ['plan_id']
     date_hierarchy = 'date'
 
+
 class ChecklistTableAdmin(admin.ModelAdmin):
-    list_display = ('checklist',)
+    list_display = ('checklist', 'date', 'category', 'category_points_id',)
     # list_filter = ('plan_id', 'date', 'conclusion', 'plan')
     # search_fields = ['plan_id']
     # date_hierarchy = 'date'
-    class Media:
-        js = (
-            'js/admin_checklist.js',   # inside app static folder
-        )
-
+    # class Media:
+    #     js = (
+    #         'js/admin_checklist.js',   # inside app static folder
+    #     )
 
 
 admin.site.register(ChecklistStatus, ChecklistStatusAdmin)
