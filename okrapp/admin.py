@@ -130,7 +130,10 @@ class ChecklistTableAdmin(admin.ModelAdmin):
     )
 
     def status(self, obj: ChecklistTable):
-        return obj.checklist.status
+        if obj.checklist.status:
+            return 1
+        else:
+            return 0
 
     # list_filter = ('plan_id', 'date', 'conclusion', 'plan')
     # search_fields = ['plan_id']
